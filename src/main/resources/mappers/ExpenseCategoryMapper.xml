@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.expensemanager.mapper.ExpenseCategoryMapper">
+
+    <select id="findAll" resultType="com.example.expensemanager.entity.ExpenseCategory">
+        SELECT
+            id,
+            name,
+            monthly_budget,
+            display_order,
+            created_at,
+            updated_at
+        FROM expense_categories
+        ORDER BY display_order, id
+    </select>
+
+    <select id="findById" resultType="com.example.expensemanager.entity.ExpenseCategory">
+        SELECT
+            id,
+            name,
+            monthly_budget,
+            display_order,
+            created_at,
+            updated_at
+        FROM expense_categories
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByName" resultType="com.example.expensemanager.entity.ExpenseCategory">
+        SELECT
+            id,
+            name,
+            monthly_budget,
+            display_order,
+            created_at,
+            updated_at
+        FROM expense_categories
+        WHERE name = #{name}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO expense_categories (
+            name,
+            monthly_budget,
+            display_order
+        ) VALUES (
+            #{name},
+            #{monthlyBudget},
+            #{displayOrder}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE expense_categories
+        SET
+            name = #{name},
+            monthly_budget = #{monthlyBudget},
+            display_order = #{displayOrder},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM expense_categories
+        WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>月別集計</title>
+<link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>月別集計</h1>
+        <div class="nav">
+            <a th:href="@{/expenses}" class="btn">経費一覧</a>
+            <a th:href="@{/expenses/new}" class="btn btn-primary">経費登録</a>
+        </div>
+    </div>
+
+    <form th:action="@{/summary}" method="get" class="form-row">
+        <div>
+            <label class="form-label">対象月</label>
+            <input type="month" name="month" th:value="${summary.targetMonth}" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">表示</button>
+    </form>
+
+    <div class="summary-grid">
+        <div class="summary-panel">
+            <div class="summary-label">支出合計</div>
+            <div class="summary-value" th:text="${#numbers.formatInteger(summary.totalAmount, 0, 'COMMA')}"></div>
+        </div>
+        <div class="summary-panel">
+            <div class="summary-label">予算合計</div>
+            <div class="summary-value" th:text="${#numbers.formatInteger(summary.totalBudget, 0, 'COMMA')}"></div>
+        </div>
+        <div class="summary-panel">
+            <div class="summary-label">残予算</div>
+            <div class="summary-value" th:text="${#numbers.formatInteger(summary.remainingBudget, 0, 'COMMA')}"></div>
+        </div>
+    </div>
+
+    <table class="table">
+        <tr>
+            <th>カテゴリ</th>
+            <th>支出合計</th>
+            <th>月予算</th>
+            <th>残予算</th>
+            <th>状態</th>
+        </tr>
+        <tr th:each="categorySummary : ${summary.categorySummaries}">
+            <td th:text="${categorySummary.categoryName}"></td>
+            <td th:text="${#numbers.formatInteger(categorySummary.totalAmount, 0, 'COMMA')}"></td>
+            <td th:text="${#numbers.formatInteger(categorySummary.monthlyBudget, 0, 'COMMA')}"></td>
+            <td th:text="${#numbers.formatInteger(categorySummary.remainingBudget, 0, 'COMMA')}"></td>
+            <td>
+                <span th:if="${categorySummary.overBudget}" class="badge badge-alert">予算超過</span>
+                <span th:unless="${categorySummary.overBudget}" class="badge badge-ok">予算内</span>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

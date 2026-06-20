@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>カテゴリ登録</title>
+<link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>カテゴリ登録</h1>
+        <div class="nav">
+            <a th:href="@{/categories}" class="btn">カテゴリ管理へ戻る</a>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/categories}" method="post">
+        <div class="form-group">
+            <label class="form-label">カテゴリ名</label>
+            <input type="text" name="name" th:value="${category.name}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">月予算</label>
+            <input type="number" name="monthlyBudget" th:value="${category.monthlyBudget}" min="0" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">表示順</label>
+            <input type="number" name="displayOrder" th:value="${category.displayOrder}" min="0" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">登録</button>
+    </form>
+</div>
+</body>
+</html>

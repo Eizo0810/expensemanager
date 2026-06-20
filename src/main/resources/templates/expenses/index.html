@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>経費一覧</title>
+<link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>経費一覧</h1>
+        <div class="nav">
+            <a th:href="@{/summary}" class="btn">月別集計</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/categories}" class="btn">カテゴリ管理</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/users}" class="btn">ユーザー管理</a>
+            <a th:href="@{/expenses/new}" class="btn btn-primary">経費登録</a>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn">ログアウト</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${param.registered}" class="alert alert-success">経費を登録しました。</div>
+    <div th:if="${param.updated}" class="alert alert-success">経費を更新しました。</div>
+    <div th:if="${param.deleted}" class="alert alert-success">経費を削除しました。</div>
+
+    <form th:action="@{/expenses}" method="get" class="form-row">
+        <div>
+            <label class="form-label">キーワード</label>
+            <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="内容・メモ・カテゴリ">
+        </div>
+        <div>
+            <label class="form-label">カテゴリ</label>
+            <select name="categoryId" class="form-control">
+                <option value="">すべて</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:selected="${category.id == categoryId}"
+                        th:text="${category.name}"></option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label">開始日</label>
+            <input type="date" name="startDate" th:value="${startDate}" class="form-control">
+        </div>
+        <div>
+            <label class="form-label">終了日</label>
+            <input type="date" name="endDate" th:value="${endDate}" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">検索</button>
+        <a th:href="@{/expenses}" class="btn">クリア</a>
+        <a th:href="@{/expenses/export(keyword=${keyword}, categoryId=${categoryId}, startDate=${startDate}, endDate=${endDate})}" class="btn">CSV出力</a>
+    </form>
+
+    <table class="table">
+        <tr>
+            <th>利用日</th>
+            <th>カテゴリ</th>
+            <th>内容</th>
+            <th>金額</th>
+            <th>支払方法</th>
+            <th>メモ</th>
+            <th>操作</th>
+        </tr>
+        <tr th:each="expense : ${expenses}">
+            <td th:text="${expense.expenseDate}"></td>
+            <td th:text="${expense.categoryName}"></td>
+            <td th:text="${expense.description}"></td>
+            <td th:text="${#numbers.formatInteger(expense.amount, 0, 'COMMA')}"></td>
+            <td th:text="${expense.paymentMethod}"></td>
+            <td th:text="${expense.memo}"></td>
+            <td>
+                <div class="actions">
+                    <a th:href="@{/expenses/{id}/edit(id=${expense.id})}" class="btn">編集</a>
+                    <form th:action="@{/expenses/{id}/delete(id=${expense.id})}"
+                          method="post"
+                          onsubmit="return confirm('この経費を削除しますか？');">
+                        <button type="submit" class="btn">削除</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

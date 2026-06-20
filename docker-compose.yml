@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=expensemanager
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - expense-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d expensemanager"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  expense-postgres-data:

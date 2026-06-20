@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>経費登録</title>
+<link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>経費登録</h1>
+        <div class="nav">
+            <a th:href="@{/expenses}" class="btn">経費一覧へ戻る</a>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/expenses}" method="post">
+        <div class="form-group">
+            <label class="form-label">利用日</label>
+            <input type="date" name="expenseDate" th:value="${expense.expenseDate}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">カテゴリ</label>
+            <select name="categoryId" class="form-control" required>
+                <option value="">選択してください</option>
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:selected="${category.id == expense.categoryId}"
+                        th:text="${category.name}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">内容</label>
+            <input type="text" name="description" th:value="${expense.description}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">金額</label>
+            <input type="number" name="amount" th:value="${expense.amount}" min="1" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">支払方法</label>
+            <input type="text" name="paymentMethod" th:value="${expense.paymentMethod}" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">メモ</label>
+            <input type="text" name="memo" th:value="${expense.memo}" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">登録</button>
+    </form>
+</div>
+</body>
+</html>

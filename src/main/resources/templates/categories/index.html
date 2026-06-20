@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>カテゴリ管理</title>
+<link th:href="@{/css/app.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>カテゴリ管理</h1>
+        <div class="nav">
+            <a th:href="@{/expenses}" class="btn">経費一覧</a>
+            <a th:href="@{/categories/new}" class="btn btn-primary">カテゴリ登録</a>
+        </div>
+    </div>
+
+    <div th:if="${param.registered}" class="alert alert-success">カテゴリを登録しました。</div>
+    <div th:if="${param.updated}" class="alert alert-success">カテゴリを更新しました。</div>
+    <div th:if="${param.deleted}" class="alert alert-success">カテゴリを削除しました。</div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>カテゴリ名</th>
+            <th>月予算</th>
+            <th>表示順</th>
+            <th>操作</th>
+        </tr>
+        <tr th:each="category : ${categories}">
+            <td th:text="${category.id}"></td>
+            <td th:text="${category.name}"></td>
+            <td th:text="${#numbers.formatInteger(category.monthlyBudget, 0, 'COMMA')}"></td>
+            <td th:text="${category.displayOrder}"></td>
+            <td>
+                <div class="actions">
+                    <a th:href="@{/categories/{id}/edit(id=${category.id})}" class="btn">編集</a>
+                    <form th:action="@{/categories/{id}/delete(id=${category.id})}"
+                          method="post"
+                          onsubmit="return confirm('このカテゴリを削除しますか？');">
+                        <button type="submit" class="btn">削除</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

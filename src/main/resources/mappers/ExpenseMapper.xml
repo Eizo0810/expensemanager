@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.expensemanager.mapper.ExpenseMapper">
+
+    <select id="findAll" resultType="com.example.expensemanager.entity.Expense">
+        SELECT
+            e.id,
+            e.category_id,
+            c.name AS category_name,
+            e.expense_date,
+            e.amount,
+            e.description,
+            e.payment_method,
+            e.memo,
+            e.created_at,
+            e.updated_at
+        FROM expenses e
+        INNER JOIN expense_categories c
+            ON c.id = e.category_id
+        <where>
+            <if test="keyword != null">
+                (
+                    e.description ILIKE CONCAT('%', #{keyword}, '%')
+                    OR e.memo ILIKE CONCAT('%', #{keyword}, '%')
+                    OR c.name ILIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+            <if test="categoryId != null">
+                AND e.category_id = #{categoryId}
+            </if>
+            <if test="startDate != null">
+                AND e.expense_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND e.expense_date &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY e.expense_date DESC, e.id DESC
+    </select>
+
+    <select id="findById" resultType="com.example.expensemanager.entity.Expense">
+        SELECT
+            e.id,
+            e.category_id,
+            c.name AS category_name,
+            e.expense_date,
+            e.amount,
+            e.description,
+            e.payment_method,
+            e.memo,
+            e.created_at,
+            e.updated_at
+        FROM expenses e
+        INNER JOIN expense_categories c
+            ON c.id = e.category_id
+        WHERE e.id = #{id}
+    </select>
+
+    <select id="countByCategoryId" resultType="int">
+        SELECT COUNT(*)
+        FROM expenses
+        WHERE category_id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO expenses (
+            category_id,
+            expense_date,
+            amount,
+            description,
+            payment_method,
+            memo
+        ) VALUES (
+            #{categoryId},
+            #{expenseDate},
+            #{amount},
+            #{description},
+            #{paymentMethod},
+            #{memo}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE expenses
+        SET
+            category_id = #{categoryId},
+            expense_date = #{expenseDate},
+            amount = #{amount},
+            description = #{description},
+            payment_method = #{paymentMethod},
+            memo = #{memo},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM expenses
+        WHERE id = #{id}
+    </delete>
+
+    <select id="summarizeByCategory" resultType="com.example.expensemanager.dto.CategorySummary">
+        SELECT
+            c.id AS category_id,
+            c.name AS category_name,
+            c.monthly_budget,
+            COALESCE(SUM(e.amount), 0) AS total_amount
+        FROM expense_categories c
+        LEFT JOIN expenses e
+            ON e.category_id = c.id
+            AND e.expense_date &gt;= #{startDate}
+            AND e.expense_date &lt;= #{endDate}
+        GROUP BY
+            c.id,
+            c.name,
+            c.monthly_budget,
+            c.display_order
+        ORDER BY c.display_order, c.id
+    </select>
+</mapper>
