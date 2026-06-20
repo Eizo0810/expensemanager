@@ -99,6 +99,16 @@ Password: postgres
 .\scripts\test.ps1
 ```
 
+## GitHub Actions
+
+`.github/workflows/test.yml` で、`main` へのpush時とPull Request作成時にJUnitテストを自動実行します。
+
+```text
+./mvnw test
+```
+
+Docker buildやDB起動は含めず、軽量なテスト実行だけにしています。
+
 ## 画面
 
 - `/login` ログイン画面
